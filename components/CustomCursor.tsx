@@ -9,6 +9,10 @@ export default function CustomCursor() {
   const [isHovering, setIsHovering] = React.useState(false)
 
   useEffect(() => {
+    if (window.matchMedia('(max-width: 1024px)').matches) {
+      return
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY })
     }
@@ -21,21 +25,25 @@ export default function CustomCursor() {
       setIsHovering(false)
     }
 
-    window.addEventListener('mousemove', handleMouseMove)
+    const handlePointerOver = (event: Event) => {
+      const target = event.target as HTMLElement | null
+      if (target?.closest('a, button, input, textarea, select, [role="button"]')) {
+        handleMouseEnter()
+      }
+    }
 
-    // Add event listeners to interactive elements
-    const interactiveElements = document.querySelectorAll('a, button, [role="button"]')
-    interactiveElements.forEach((el) => {
-      el.addEventListener('mouseenter', handleMouseEnter)
-      el.addEventListener('mouseleave', handleMouseLeave)
-    })
+    const handlePointerOut = () => {
+      handleMouseLeave()
+    }
+
+    window.addEventListener('mousemove', handleMouseMove)
+    document.addEventListener('mouseover', handlePointerOver)
+    document.addEventListener('mouseout', handlePointerOut)
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove)
-      interactiveElements.forEach((el) => {
-        el.removeEventListener('mouseenter', handleMouseEnter)
-        el.removeEventListener('mouseleave', handleMouseLeave)
-      })
+      document.removeEventListener('mouseover', handlePointerOver)
+      document.removeEventListener('mouseout', handlePointerOut)
     }
   }, [])
 
@@ -49,8 +57,8 @@ export default function CustomCursor() {
       }}
       transition={{
         type: 'spring',
-        stiffness: 500,
-        damping: 28,
+        stiffness: 420,
+        damping: 30,
       }}
     />
   )

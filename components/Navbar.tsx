@@ -1,18 +1,25 @@
 'use client'
 
-import React, { useState, useEffect, forwardRef, useRef, useImperativeHandle } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import ThemeToggle from '@/components/ThemeToggle'
 import { content } from '@/data/content'
+import type { Theme } from '@/hooks/useTheme'
 
 interface NavbarHandle {
-  logoRef: React.RefObject<HTMLDivElement>
+  logoRef: React.RefObject<HTMLAnchorElement>
 }
 
-const Navbar = forwardRef<NavbarHandle>((props, ref) => {
+type NavbarProps = {
+  theme: Theme
+  onToggleTheme: () => void
+}
+
+const Navbar = forwardRef<NavbarHandle, NavbarProps>(({ theme, onToggleTheme }, ref) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
-  const logoRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLAnchorElement>(null)
 
   useImperativeHandle(ref, () => ({
     logoRef,
@@ -28,85 +35,82 @@ const Navbar = forwardRef<NavbarHandle>((props, ref) => {
 
   return (
     <motion.nav
-      className={`fixed top-0 w-full z-40 transition-all duration-300 ${
-        isScrolled
-          ? 'bg-white border-b border-border'
-          : 'bg-white'
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-500 ${
+        isScrolled ? 'border-line bg-paper/92 backdrop-blur' : 'border-transparent bg-paper'
       }`}
-      initial={{ y: -100 }}
+      initial={{ y: -80 }}
       animate={{ y: 0 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="px-6 lg:px-12 flex items-center justify-between h-20">
-        {/* Logo */}
-        <div ref={logoRef} className="flex items-center">
-          <motion.a
-            href="#"
-            className="text-xl font-bold"
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className="text-black">Zenix</span>
-            <span className="text-accent ml-2">Web</span>
-          </motion.a>
-        </div>
+      <div className="mx-auto flex h-20 max-w-[1320px] items-center justify-between px-6 lg:px-12">
+        <a href="#" ref={logoRef} className="group flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card text-sm font-semibold">
+            z.
+          </span>
+          <span className="text-lg font-semibold tracking-tight">Zenix Studio</span>
+        </a>
 
-        {/* Navigation desktop */}
-        <div className="hidden md:flex gap-12">
-          {content.navbar.navLinks.map((link, i) => (
-            <motion.a
-              key={i}
+        <div className="hidden items-center gap-10 md:flex">
+          {content.navbar.links.map((link) => (
+            <a
+              key={link.href}
               href={link.href}
-              className="text-secondary text-sm font-medium hover:text-black transition-colors underline-fancy"
-              whileHover={{ color: '#0A0A0A' }}
+              className="mono text-[11px] uppercase tracking-[0.2em] text-muted transition-colors hover:text-ink"
             >
               {link.label}
-            </motion.a>
+            </a>
           ))}
         </div>
 
-        {/* CTA Button */}
-        <a
-          href="#contact"
-          className="hidden md:block bg-black text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-accent hover:shadow-lg transition-all hover:scale-105 active:scale-95 shadow-md cursor-pointer"
-        >
-          {content.navbar.cta}
-        </a>
+        <div className="hidden items-center gap-4 md:flex">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} />
+          <a
+            href="#contact"
+            className="rounded-full border border-line bg-ink px-5 py-2.5 text-sm text-paper transition duration-300 hover:-translate-y-0.5 hover:bg-card hover:text-ink"
+          >
+            {content.navbar.cta}
+          </a>
+        </div>
 
-        {/* Menu mobile */}
         <button
-          className="md:hidden text-black hover:text-secondary"
-          onClick={() => setIsOpen(!isOpen)}
+          type="button"
+          className="md:hidden"
+          onClick={() => setIsOpen((value) => !value)}
+          aria-label="Ouvrir le menu"
         >
-          {isOpen ? <X size={24} /> : <Menu size={24} />}
+          {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
 
-      {/* Mobile menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            className="md:hidden bg-white border-b border-border pointer-events-none"
+            className="border-t border-line bg-paper md:hidden"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="px-6 py-6 space-y-6 pointer-events-auto">
-              {content.navbar.navLinks.map((link, i) => (
+            <div className="space-y-5 px-6 py-6">
+              <div className="mb-2 flex items-center justify-between">
+                <ThemeToggle theme={theme} onToggle={onToggleTheme} />
                 <a
-                  key={i}
+                  href="#contact"
+                  className="rounded-full border border-line bg-ink px-4 py-2 text-xs text-paper"
+                >
+                  {content.navbar.cta}
+                </a>
+              </div>
+              {content.navbar.links.map((link) => (
+                <a
+                  key={link.href}
                   href={link.href}
-                  className="block text-secondary hover:text-black transition-colors text-sm font-medium"
+                  className="block text-sm uppercase tracking-[0.18em] text-muted"
+                  onClick={() => setIsOpen(false)}
                 >
                   {link.label}
                 </a>
               ))}
-              <a
-                href="#contact"
-                className="block bg-black text-white px-6 py-2.5 rounded-xl text-sm font-medium text-center hover:bg-accent hover:shadow-lg transition-all hover:scale-105 active:scale-95 shadow-md cursor-pointer"
-              >
-                {content.navbar.cta}
-              </a>
             </div>
           </motion.div>
         )}

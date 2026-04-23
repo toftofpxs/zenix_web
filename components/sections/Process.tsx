@@ -1,71 +1,51 @@
 'use client'
 
-import React from 'react'
 import { motion } from 'framer-motion'
-import { useInView } from 'framer-motion'
-import { useRef } from 'react'
 import { content } from '@/data/content'
 
 export default function Process() {
-  const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-100px' })
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 40 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.6 },
-    },
-  }
-
   return (
-    <section id="process" ref={ref} className="w-full py-24 bg-white">
-      <div className="px-6 lg:px-12 max-w-6xl mx-auto">
-        {/* Header */}
-        <motion.div
-          className="text-center mb-20"
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-4xl lg:text-5xl font-bold text-black mb-4">{content.process.title}</h2>
-        </motion.div>
+    <section id="process" className="section-divider py-20 lg:py-28">
+      <div className="mx-auto max-w-[1320px] px-6 lg:px-12">
+        <h2 className="text-display tracking-tighter">{content.process.title}</h2>
+        <p className="mt-3 text-sm text-muted">{content.process.subtitle}</p>
 
-        {/* Steps */}
-        <motion.div
-          className="grid grid-cols-1 md:grid-cols-3 gap-12"
-          variants={containerVariants}
-          initial="hidden"
-          animate={isInView ? 'visible' : 'hidden'}
-        >
-          {content.process.steps.map((step, i) => (
-            <motion.div key={i} className="relative" variants={itemVariants}>
-              {/* Number + Title + Description */}
-              <div className="flex flex-col items-start">
-                <div className="text-6xl font-bold text-secondary opacity-20 mb-4">{step.number}</div>
-                <h3 className="text-2xl font-bold text-black mb-3">{step.title}</h3>
-                <p className="text-secondary leading-generous">{step.description}</p>
+        <div className="mt-12 border-t border-line">
+          {content.process.steps.map((step) => (
+            <motion.article
+              key={step.number}
+              className="group section-divider grid grid-cols-[auto_1fr] gap-6 py-8 lg:grid-cols-[auto_auto_1fr_auto] lg:items-center"
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              whileHover={{ x: 10 }}
+            >
+              <span className="mono text-xs tracking-[0.2em] text-muted">{step.number}</span>
+              <span className="relative h-8 w-8 rounded-full border border-line">
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-ink"
+                  initial={{ scale: 0 }}
+                  whileHover={{ scale: 1 }}
+                  transition={{ duration: 0.35 }}
+                />
+              </span>
+              <div>
+                <div className="mb-2 flex items-center gap-3">
+                  <h3 className="text-2xl tracking-tight">{step.title}</h3>
+                  <motion.span
+                    className="mono rounded-full border border-line px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-muted"
+                    initial={{ opacity: 0, y: 8 }}
+                    whileHover={{ opacity: 1, y: 0 }}
+                  >
+                    {step.tag}
+                  </motion.span>
+                </div>
+                <p className="max-w-xl text-sm text-muted">{step.description}</p>
               </div>
-
-              {/* Connector line on desktop */}
-              {i < content.process.steps.length - 1 && (
-                <div className="hidden md:block absolute top-8 -right-6 w-12 h-0.5 bg-border" />
-              )}
-            </motion.div>
+            </motion.article>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

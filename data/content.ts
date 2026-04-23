@@ -1,155 +1,180 @@
+export type NavItem = {
+  label: string
+  href: string
+}
+
+export type ServiceItem = {
+  number: string
+  title: string
+  description: string
+}
+
+export type PortfolioSlide = {
+  id: string
+  outlineWord: string
+  title: string
+  category: string
+  summary: string
+  badge: string
+}
+
+export type ProcessStep = {
+  number: string
+  title: string
+  tag: string
+  description: string
+}
+
 export const content = {
   navbar: {
-    logo: 'Zenix Web',
-    navLinks: [
+    links: [
       { label: 'Services', href: '#services' },
       { label: 'Portfolio', href: '#portfolio' },
       { label: 'Processus', href: '#process' },
       { label: 'Contact', href: '#contact' },
-    ],
+    ] satisfies NavItem[],
     cta: 'Devis gratuit',
   },
-
   hero: {
-    tag: '',
-    title: [
-      'Des sites web qui',
-      'transforment les',
-      'visiteurs en clients.',
-    ],
-    subtitle: 'Rapide. Propre. Conçu pour convertir.',
-    cta: 'Démarrer un projet →',
-    highlightWord: 'transforment',
+    tag: 'studio numerique / paris',
+    title: ['Nous creons des', 'experiences web', 'qui performent.'],
+    primaryCta: 'Lancer un projet',
+    secondaryCta: 'Voir les realisations',
+    circularText: 'zenix studio . design . seo . performance .',
   },
-
-  stats: [
-    { number: '120+', label: 'sites livrés' },
-    { number: '50%', label: 'conversion moyenne' },
-    { number: '2.8s', label: 'charge moyenne' },
+  ticker: [
+    'Design',
+    'SEO',
+    'Performance',
+    'Branding',
+    'No-code',
+    'UX Strategy',
+    'Motion',
+    'Development',
   ],
-
   services: {
-    title: 'Ce que nous faisons',
-    subtitle: 'Solutions pensées pour les commerces locaux et PME.',
+    number: '01',
+    title: 'Services',
+    badge: '6+',
     items: [
       {
         number: '01',
-        title: 'Sites ultrarapides',
-        description: 'Performance critique pour le SEO et l\'expérience utilisateur.',
+        title: 'Direction artistique',
+        description: 'Systeme visuel premium, interfaces editoriales et identite digitale coherente.',
       },
       {
         number: '02',
-        title: 'SEO intégré',
-        description: 'Structure technique et contenu optimisés dès le départ.',
+        title: 'UX / UI design',
+        description: 'Wireframes, prototypes et parcours optimises pour une experience fluide.',
       },
       {
         number: '03',
-        title: 'Mobile-first',
-        description: '60% des visites depuis mobile : nous optimisons pour ça.',
+        title: 'Developpement Next.js',
+        description: 'Architecture moderne, code type-safe et maintenance simplifiee.',
       },
       {
         number: '04',
-        title: 'Conversion-focused',
-        description: 'Chaque élément conçu pour transformer les visiteurs en clients.',
+        title: 'SEO technique',
+        description: 'Fondations performantes pour accelerer indexation, vitesse et visibilite.',
       },
       {
         number: '05',
-        title: 'Analytics & Suivi',
-        description: 'Tableaux de bord clairs pour suivre ce qui marche vraiment.',
+        title: 'Optimisation conversion',
+        description: 'Design systematique des parcours pour generer plus de demandes qualifiees.',
       },
-      {
-        number: '06',
-        title: 'Support réactif',
-        description: 'Disponible pour les ajustements et les mises à jour.',
-      },
-    ],
+    ] satisfies ServiceItem[],
   },
-
   portfolio: {
-    title: 'Résultats réels',
-    subtitle: 'Des sites qui travaillent pour vous.',
-    projects: [
+    title: 'Portfolio',
+    subtitle: 'Des produits web qui melangent esthetique, vitesse et impact business.',
+    slides: [
       {
-        category: 'Garage automobile',
-        name: 'AutoPro Services',
-        result: '+35% de RDV en 3 mois',
+        id: '01',
+        outlineWord: 'AURA',
+        title: 'Aura Atelier',
+        category: 'E-commerce premium',
+        summary: 'Refonte complete, tunnel simplifie et score Lighthouse > 95.',
+        badge: 'Design + Build',
       },
       {
-        category: 'Salon de coiffure',
-        name: 'OceéLis Coiffure',
-        result: '+50% prises RDV en ligne',
+        id: '02',
+        outlineWord: 'NOVA',
+        title: 'Nova Finance',
+        category: 'SaaS B2B',
+        summary: 'Narration motion, sections modulaires et onboarding produit clarifie.',
+        badge: 'UX + Motion',
       },
       {
-        category: 'Restaurant',
-        name: 'Le Petit Bistro',
-        result: '+200 commandes/mois',
+        id: '03',
+        outlineWord: 'VERT',
+        title: 'Vert Habitat',
+        category: 'Immobilier',
+        summary: 'SEO local renforce, parcours lead capture et pages ultra rapides.',
+        badge: 'SEO + Performance',
       },
       {
-        category: 'E-commerce',
-        name: 'TechGear Shop',
-        result: 'AOV +28% en 6 mois',
+        id: '04',
+        outlineWord: 'ORBE',
+        title: 'Orbe Consulting',
+        category: 'Cabinet conseil',
+        summary: 'Image de marque modernisee avec systeme editorial multilingue.',
+        badge: 'Brand + CMS',
       },
       {
-        category: 'Services B2B',
-        name: 'Consult Pro',
-        result: '+45 leads qualifiés/mois',
+        id: '05',
+        outlineWord: 'WAVE',
+        title: 'Wave Studio',
+        category: 'Agence creative',
+        summary: 'Landing immersive, interactions drag et storytelling vertical.',
+        badge: 'Concept + Dev',
       },
-      {
-        category: 'Fitness',
-        name: 'BodyFit Studio',
-        result: '+60 adhésions annuelles',
-      },
-    ],
+    ] satisfies PortfolioSlide[],
   },
-
   process: {
-    title: 'De zéro à live en 3–4 semaines',
+    title: 'Processus',
+    subtitle: 'Une methode claire, de la strategie au lancement.',
     steps: [
       {
         number: '01',
-        title: 'Audit & Stratégie',
-        description: 'On comprend votre métier, vos clients, vos objectifs de conversion.',
+        title: 'Cadrage',
+        tag: 'strategie',
+        description: 'Objectifs, audience, benchmarks et architecture de contenu.',
       },
       {
         number: '02',
-        title: 'Design & Développement',
-        description: 'Création du site et intégration de la conversion dans chaque pixel.',
+        title: 'Conception',
+        tag: 'design',
+        description: 'Direction visuelle, prototypage interactif et validation rapide.',
       },
       {
         number: '03',
-        title: 'Test & Lancement',
-        description: 'Tests de performance, SEO, responsive. Puis déploiement en live.',
+        title: 'Production',
+        tag: 'developpement',
+        description: 'Build Next.js, integration motion et optimisation detaillee.',
       },
-    ],
+      {
+        number: '04',
+        title: 'Lancement',
+        tag: 'go-live',
+        description: 'Recette finale, analytics et suivi des performances.',
+      },
+    ] satisfies ProcessStep[],
   },
-
   contact: {
-    title: 'Parlons de votre projet.',
-    subtitle: 'On vous répond en moins de 24h.',
+    title: 'Parlons de votre prochain site.',
+    email: 'hello@zenixweb.com',
+    availability: 'Disponible pour projets Q2',
     form: {
-      fields: [
-        { name: 'name', label: 'Votre nom', type: 'text', required: true },
-        { name: 'email', label: 'Email', type: 'email', required: true },
-        { name: 'company', label: 'Entreprise', type: 'text', required: true },
-        { name: 'phone', label: 'Téléphone', type: 'tel', required: false },
-        { name: 'message', label: 'Votre projet', type: 'textarea', required: true },
-      ],
-    },
-    contactInfo: {
-      email: 'hello@zenixweb.com',
-      phone: '+33 1 23 45 67 89',
-      location: 'Paris, France',
+      budget: ['< 5k', '5k - 15k', '15k - 30k', '30k+'],
+      timeline: ['Urgent', '1 mois', '2-3 mois', 'Flexible'],
     },
   },
-
   footer: {
-    logo: 'Zenix Web',
-    tagline: 'Votre présence web, optimisée pour convertir.',
+    copyright: '© 2026 Zenix Studio. Tous droits reserves.',
     links: [
       { label: 'Services', href: '#services' },
       { label: 'Portfolio', href: '#portfolio' },
       { label: 'Contact', href: '#contact' },
-    ],
-    copyright: '© 2024 Zenix Web. Tous droits réservés.',
+    ] satisfies NavItem[],
   },
-}
+} as const
