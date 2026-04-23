@@ -4,11 +4,17 @@ import React, { useRef, useEffect, useState } from 'react'
 import { motion, useMotionValue, useReducedMotion, useScroll, useSpring, useTransform } from 'framer-motion'
 import { content } from '@/data/content'
 
-function useTypewriter(text: string, startDelay = 1100, speed = 36) {
+function useTypewriter(text: string, enabled: boolean, startDelay = 120, speed = 36) {
   const [displayed, setDisplayed] = useState('')
   const [done, setDone] = useState(false)
 
   useEffect(() => {
+    if (!enabled) {
+      setDisplayed('')
+      setDone(false)
+      return
+    }
+
     let outerTimer: ReturnType<typeof setTimeout>
     let interval: ReturnType<typeof setInterval>
 
@@ -28,12 +34,16 @@ function useTypewriter(text: string, startDelay = 1100, speed = 36) {
       clearTimeout(outerTimer)
       clearInterval(interval)
     }
-  }, [text, startDelay, speed])
+  }, [text, enabled, startDelay, speed])
 
   return { displayed, done }
 }
 
-export default function Hero() {
+interface HeroProps {
+  isReady?: boolean
+}
+
+export default function Hero({ isReady = true }: HeroProps) {
   const ref = useRef<HTMLDivElement>(null)
   const { scrollY } = useScroll()
   const titleY = useTransform(scrollY, [0, 500], [0, -156])
@@ -53,7 +63,8 @@ export default function Hero() {
   const pointsY = useTransform(scrollY, [0, 900], [0, 28])
   const contentY = useTransform(scrollY, [0, 900], [0, -36])
   const heroTagText = content.hero.tag.replace(/^●\s*/, '')
-  const { displayed: subtitleTyped, done: subtitleDone } = useTypewriter(content.hero.subtitle)
+  const { displayed: subtitleTyped, done: subtitleDone } = useTypewriter(content.hero.subtitle, isReady)
+  const titleLines = content.hero.title
 
   const scrollIndicatorVariants = {
     animate: {
@@ -114,25 +125,40 @@ export default function Hero() {
       <motion.div
         style={{ y: titleY }}
         className="hero-title-wrap mb-8 text-center relative z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 0.3 }}
+        initial={{ opacity: 0, y: 24 }}
+        animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 }}
+        transition={{ duration: 0.9, delay: 0.05, ease: [0.2, 1, 0.22, 1] }}
       >
         <h1 className="hero-title text-hero font-bold text-black leading-generous">
-          {content.hero.title[0]}
-          <br />
-          <span className="text-secondary">
-            {content.hero.title[1]}
-            <br />
-          </span>
-          <span>
-            {content.hero.title[2].split(content.hero.highlightWord).map((part, i, arr) => (
+          <motion.span
+            className="block"
+            initial={{ opacity: 0, y: 30, filter: 'blur(7px)' }}
+            animate={isReady ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 30, filter: 'blur(7px)' }}
+            transition={{ duration: 0.55, delay: 0.06, ease: [0.2, 1, 0.22, 1] }}
+          >
+            {titleLines[0]}
+          </motion.span>
+          <motion.span
+            className="block text-secondary"
+            initial={{ opacity: 0, y: 30, filter: 'blur(7px)' }}
+            animate={isReady ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 30, filter: 'blur(7px)' }}
+            transition={{ duration: 0.55, delay: 0.18, ease: [0.2, 1, 0.22, 1] }}
+          >
+            {titleLines[1]}
+          </motion.span>
+          <motion.span
+            className="block"
+            initial={{ opacity: 0, y: 30, filter: 'blur(7px)' }}
+            animate={isReady ? { opacity: 1, y: 0, filter: 'blur(0px)' } : { opacity: 0, y: 30, filter: 'blur(7px)' }}
+            transition={{ duration: 0.55, delay: 0.3, ease: [0.2, 1, 0.22, 1] }}
+          >
+            {titleLines[2].split(content.hero.highlightWord).map((part, i, arr) => (
               <React.Fragment key={i}>
                 {part}
                 {i < arr.length - 1 && <span className="text-accent">{content.hero.highlightWord}</span>}
               </React.Fragment>
             ))}
-          </span>
+          </motion.span>
         </h1>
       </motion.div>
 
@@ -140,9 +166,9 @@ export default function Hero() {
       <motion.p
         style={{ y: subtitleY }}
         className="hero-subtitle text-secondary text-lg max-w-2xl text-center mb-12 font-light relative z-10"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.01, delay: 0.9 }}
+        initial={{ opacity: 0, y: 16 }}
+        animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
+        transition={{ duration: 0.55, delay: 0.2, ease: [0.2, 1, 0.22, 1] }}
       >
         {shouldReduceMotion ? content.hero.subtitle : (
           <>
@@ -158,8 +184,8 @@ export default function Hero() {
         style={{ y: contentY }}
         className="hero-cta bg-black text-white px-8 py-3.5 rounded-xl font-medium hover:bg-accent hover:shadow-lg transition-all mb-20 relative z-10 shadow-md hover:scale-105 active:scale-95 cursor-pointer"
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.7 }}
+        animate={isReady ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+        transition={{ duration: 0.7, delay: 0.32, ease: [0.2, 1, 0.22, 1] }}
       >
         {content.hero.cta}
       </motion.a>
@@ -168,7 +194,9 @@ export default function Hero() {
       <motion.div
         className="absolute bottom-8 flex flex-col items-center z-10"
         variants={scrollIndicatorVariants}
-        animate="animate"
+        animate={isReady ? 'animate' : undefined}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
       >
         <div className="w-0.5 h-8 bg-secondary rounded-full" />
       </motion.div>

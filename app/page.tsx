@@ -27,6 +27,8 @@ function SectionReveal({ children, delay = 0 }: { children: ReactNode; delay?: n
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(true)
+  const [isSiteLoaded, setIsSiteLoaded] = useState(false)
+  const [isLogoAnimationDone, setIsLogoAnimationDone] = useState(false)
   const [logoOffset, setLogoOffset] = useState({ x: 0, y: 0 })
   const loaderLogoRef = useRef<HTMLDivElement>(null)
   const navbarRef = useRef<any>(null)
@@ -37,29 +39,31 @@ export default function Home() {
         return
       }
 
-      const loaderRect = loaderLogoRef.current.getBoundingClientRect()
       const navbarLogoRect = navbarRef.current.logoRef.current.getBoundingClientRect()
 
-      // Calculer le centre des deux logos
-      const loaderCenter = {
-        x: loaderRect.left + loaderRect.width / 2,
-        y: loaderRect.top + loaderRect.height / 2,
-      }
-
+      // Le logo du loader démarre visuellement au centre de l'écran.
+      // Utiliser ce repère évite les décalages liés aux tailles de texte selon les écrans.
       const navbarCenter = {
         x: navbarLogoRect.left + navbarLogoRect.width / 2,
         y: navbarLogoRect.top + navbarLogoRect.height / 2,
       }
 
-      // Calculer le décalage basé sur les centres
-      setLogoOffset({
-        x: navbarCenter.x - loaderCenter.x,
-        y: navbarCenter.y - loaderCenter.y + 15,
-      })
+      const viewportCenter = {
+        x: window.innerWidth / 2,
+        y: window.innerHeight / 2,
+      }
 
-      console.log('Loader center:', loaderCenter)
-      console.log('Navbar center:', navbarCenter)
-      console.log('Calculated offset:', { x: navbarCenter.x - loaderCenter.x, y: navbarCenter.y - loaderCenter.y })
+      const rawOffset = {
+        x: navbarCenter.x - viewportCenter.x,
+        y: navbarCenter.y - viewportCenter.y,
+      }
+
+      const maxYTravel = window.innerHeight * 0.45
+
+      setLogoOffset({
+        x: rawOffset.x,
+        y: Math.max(-maxYTravel, Math.min(maxYTravel, rawOffset.y)),
+      })
     }
 
     // Attendre plusieurs frames pour s'assurer que tout est rendu correctement
@@ -79,18 +83,29 @@ export default function Home() {
 
     window.addEventListener('resize', measureLogoOffset)
 
-    // Laisser le loader complétement se terminer (1450ms animation + 450ms exit = 1900ms)
-    // On ajoute un buffer supplémentaire pour s'assurer que tout est fini
-    const loaderTimer = window.setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
-
     return () => {
       window.clearTimeout(initialTimer)
       window.removeEventListener('resize', measureLogoOffset)
-      window.clearTimeout(loaderTimer)
     }
   }, [])
+
+  useEffect(() => {
+    const markLoaded = () => setIsSiteLoaded(true)
+
+    if (document.readyState === 'complete') {
+      markLoaded()
+      return
+    }
+
+    window.addEventListener('load', markLoaded)
+    return () => window.removeEventListener('load', markLoaded)
+  }, [])
+
+  useEffect(() => {
+    if (isSiteLoaded && isLogoAnimationDone) {
+      setIsLoading(false)
+    }
+  }, [isSiteLoaded, isLogoAnimationDone])
 
   return (
     <>
@@ -99,15 +114,15 @@ export default function Home() {
         initial={false}
         animate={{ opacity: isLoading ? 0 : 1, pointerEvents: isLoading ? 'none' : 'auto' }}
         transition={{
-          opacity: { duration: 0.45, delay: isLoading ? 0 : 1.3, ease: [0.4, 0, 0.2, 1] },
-          pointerEvents: { duration: 0, delay: isLoading ? 0 : 1.3 },
+          opacity: { duration: 0.45, delay: isLoading ? 0 : 0.1, ease: [0.4, 0, 0.2, 1] },
+          pointerEvents: { duration: 0, delay: isLoading ? 0 : 0.1 },
         }}
         style={{ pointerEvents: isLoading ? 'none' : 'auto' }}
       >
         <Navbar ref={navbarRef} />
         <main className="relative overflow-hidden">
           <SectionReveal delay={0.05}>
-            <Hero />
+            <Hero isReady={!isLoading} />
           </SectionReveal>
           <SectionReveal delay={0.08}>
             <Stats />
@@ -145,6 +160,7 @@ export default function Home() {
                   x: [0, 0, logoOffset.x],
                   y: [0, 0, logoOffset.y],
                 }}
+                onAnimationComplete={() => setIsLogoAnimationDone(true)}
                 transition={{
                   duration: 1.45,
                   times: [0, 0.32, 1],
